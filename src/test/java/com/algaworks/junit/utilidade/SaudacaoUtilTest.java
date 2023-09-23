@@ -6,40 +6,54 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 class SaudacaoUtilTest {
 
 	@Test
 	public void deveSaudarBomDia() {
-		String saudacao = SaudacaoUtil.saudar(9);
+		//Arrange
+		int horaValida = 9;
 		
+		//Action
+		String saudacao = SaudacaoUtil.saudar(horaValida);
+		
+		//Assertions
 		assertEquals("Bom dia", saudacao, "Saudação incorreta!");
 	}
 	
 	@Test
 	public void deveSaudarBomDiaAPartir5h() {
-		String saudacao = SaudacaoUtil.saudar(5);
+		int horaValida = 5;
+		
+		String saudacao = SaudacaoUtil.saudar(horaValida);
 		
 		assertEquals("Bom dia", saudacao, "Saudação incorreta!");
 	}
 	
 	@Test
 	public void deveSaudarBoaTarde() {
-		String saudacao = SaudacaoUtil.saudar(13);
+		int horaValida = 13;
+		
+		String saudacao = SaudacaoUtil.saudar(horaValida);
 		
 		assertEquals("Boa tarde", saudacao, "Saudação incorreta!");
 	}
 	
 	@Test
 	public void deveSaudarBoaNoite() {
-		String saudacao = SaudacaoUtil.saudar(19);
+		int horaValida = 19;
+		
+		String saudacao = SaudacaoUtil.saudar(horaValida);
 		
 		assertEquals("Boa noite", saudacao, "Saudação incorreta!");
 	}
 	
 	@Test
 	public void deveSaudarBoaNoiteAs4h() {
-		String saudacao = SaudacaoUtil.saudar(4);
+		int horaValida = 4;
+		
+		String saudacao = SaudacaoUtil.saudar(horaValida);
 		
 		assertEquals("Boa noite", saudacao, "Saudação incorreta!");
 	}
@@ -47,12 +61,21 @@ class SaudacaoUtilTest {
 	
 	@Test
 	public void deveLancarUmaExcecao() {
-		assertThrows(IllegalArgumentException.class, () -> saudar(-10));
+		int horaInvalida = -10;
+		
+		Executable execucaoInvalida = () -> saudar(horaInvalida);
+		
+		assertThrows(IllegalArgumentException.class, execucaoInvalida);
 	}
 	
 	@Test
 	public void naoDeveLancarUmaExcecao() {
-		assertDoesNotThrow(() -> saudar(0));
+		int horaInvalida = 0;
+		
+		Executable execucaoValida = () -> saudar(horaInvalida);
+		
+		
+		assertDoesNotThrow(execucaoValida);
 	}
 
 }

@@ -13,7 +13,9 @@ class FiltroNumerosTest {
 	public void deveRetornarNumerosPares() {
 		List<Integer> numeros = Arrays.asList(1, 2, 3, 4);
 		List<Integer> numerosParesEsperados = Arrays.asList(2, 4);
+		
 		List<Integer> numerosFiltrados = FiltroNumeros.numerosPares(numeros);
+		
 		assertIterableEquals(numerosParesEsperados, numerosFiltrados);
 	}
 

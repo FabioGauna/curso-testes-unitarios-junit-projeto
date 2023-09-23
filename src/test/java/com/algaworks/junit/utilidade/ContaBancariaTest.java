@@ -1,11 +1,10 @@
 package com.algaworks.junit.utilidade;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.math.BigDecimal;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 class ContaBancariaTest {
 	
@@ -13,27 +12,31 @@ class ContaBancariaTest {
 
 	@Test
 	void deveCriarContaBancariaComSaldoPositivo() {
+		BigDecimal saldoInformado = new BigDecimal(10);
+		ContaBancaria contaBancaria = new ContaBancaria(saldoInformado);
 		
-		BigDecimal saldoPositivo = new BigDecimal(10);
+		BigDecimal saldoDaContaCriada = contaBancaria.saldo();
 		
-		ContaBancaria contaBancaria = new ContaBancaria(saldoPositivo);
-		
-		Assertions.assertEquals(new BigDecimal(10), contaBancaria.saldo());
+		Assertions.assertEquals(saldoInformado, saldoDaContaCriada);
 	}
 	
 	@Test
 	void deveCriarContaBancariaComSaldoNegativo() {
-		
 		BigDecimal saldoNegativo = new BigDecimal(-10);
-		
 		ContaBancaria contaBancaria = new ContaBancaria(saldoNegativo);
 		
-		Assertions.assertEquals(new BigDecimal(-10), contaBancaria.saldo());
+		BigDecimal saldoDaContaCriada = contaBancaria.saldo();
+		
+		Assertions.assertEquals(saldoNegativo, saldoDaContaCriada);
 	}
 	
 	@Test
 	void deveLancarExcecaoAoCriarContaBancariaComSaldoNulo() {
-		Assertions.assertThrows(IllegalArgumentException.class, ()-> new ContaBancaria(null));
+		BigDecimal saldo = null;
+		
+		Executable execucaoDoConstrutor = () -> new ContaBancaria(saldo); 
+		
+		Assertions.assertThrows(IllegalArgumentException.class, execucaoDoConstrutor);
 	}
 	
 	//Realizar saque
@@ -42,59 +45,70 @@ class ContaBancariaTest {
 	void deveLancarExcecaoAoRealizarSaqueComValorNulo() {
 		BigDecimal saldo = new BigDecimal(10);
 		ContaBancaria contaBancaria = new ContaBancaria(saldo);
+		BigDecimal valorDeSaqueNulo = null;
 		
-		Assertions.assertThrows(IllegalArgumentException.class, () -> contaBancaria.saque(null)); 
+		Executable execusaoDoSaque = () -> contaBancaria.saque(valorDeSaqueNulo);
+		
+		Assertions.assertThrows(IllegalArgumentException.class, execusaoDoSaque); 
 	}
 	
 	@Test
 	void deveLancarExcecaoAoRealizarSaqueComValorZero() {
 		BigDecimal saldo = new BigDecimal(10);
 		ContaBancaria contaBancaria = new ContaBancaria(saldo);
+		BigDecimal valorDeSaqueZero = BigDecimal.ZERO;
 		
-		Assertions.assertThrows(IllegalArgumentException.class, () -> contaBancaria.saque(BigDecimal.ZERO)); 
+		Executable execusaoDoSaque = () -> contaBancaria.saque(valorDeSaqueZero);
+		
+		Assertions.assertThrows(IllegalArgumentException.class, execusaoDoSaque); 
 	}
 	
 	@Test
 	void deveLancarExcecaoAoRealizarSaqueComValorNegativo() {
 		BigDecimal saldo = new BigDecimal(10);
 		ContaBancaria contaBancaria = new ContaBancaria(saldo);
+		BigDecimal valorDeSaqueNegativo = new BigDecimal(-10);
 		
-		BigDecimal valor = new BigDecimal(-10);
+		Executable execusaoDoSaque = () -> contaBancaria.saque(valorDeSaqueNegativo);
 		
-		Assertions.assertThrows(IllegalArgumentException.class, () -> contaBancaria.saque(valor)); 
+		Assertions.assertThrows(IllegalArgumentException.class, execusaoDoSaque); 
 	}
 	
 	@Test
 	void deveLancarExcecaoQuandoOSaldoForInsuficiente() {
 		BigDecimal saldo = new BigDecimal(10);
 		ContaBancaria contaBancaria = new ContaBancaria(saldo);
+		BigDecimal valorDeSaqueMaiorQueOSaldo = new BigDecimal(20);
 		
-		BigDecimal valor = new BigDecimal(20);
+		Executable execusaoDoSaque = () -> contaBancaria.saque(valorDeSaqueMaiorQueOSaldo);
 		
-		Assertions.assertThrows(RuntimeException.class, () -> contaBancaria.saque(valor)); 
+		Assertions.assertThrows(RuntimeException.class, execusaoDoSaque); 
 	}
 	
 	@Test
 	void deveRealizarUmSaque() {
-		BigDecimal saldo = new BigDecimal(10);
-		ContaBancaria contaBancaria = new ContaBancaria(saldo);
+		BigDecimal novoSaldo = new BigDecimal(10);
+		ContaBancaria contaBancaria = new ContaBancaria(novoSaldo);
+		BigDecimal valorDoSaque = new BigDecimal(5);
+		BigDecimal saldoEsperado = new BigDecimal(5);
 		
-		BigDecimal valor = new BigDecimal(5);
-		BigDecimal novoSaldo = new BigDecimal(5);
+		contaBancaria.saque(valorDoSaque);
+		BigDecimal saldoAtualizado = contaBancaria.saldo();
 		
-		contaBancaria.saque(valor);
-		
-		Assertions.assertEquals(novoSaldo, contaBancaria.saldo());
+		Assertions.assertEquals(saldoEsperado, saldoAtualizado);
 	}
 	
 	//Realizar depósito
 	
 	@Test
 	void deveLancarExcecaoAoDepositarComValorNulo() {
-		BigDecimal saldo = new BigDecimal(10);
-		ContaBancaria contaBancaria = new ContaBancaria(saldo);
+		BigDecimal novoSaldo = new BigDecimal(10);
+		ContaBancaria contaBancaria = new ContaBancaria(novoSaldo);
+		BigDecimal valorDeDepositoNulo = null;
 		
-		Assertions.assertThrows(IllegalArgumentException.class, () -> contaBancaria.deposito(null)); 
+		Executable execucaoDoDeposito = () -> contaBancaria.deposito(valorDeDepositoNulo);
+		
+		Assertions.assertThrows(IllegalArgumentException.class, execucaoDoDeposito); 
 	}
 	
 	@Test
@@ -109,23 +123,24 @@ class ContaBancariaTest {
 	void deveLancarExcecaoAoDepositarComValorNegativo() {
 		BigDecimal saldo = new BigDecimal(10);
 		ContaBancaria contaBancaria = new ContaBancaria(saldo);
+		BigDecimal valorDeDepositoNegativo = new BigDecimal(-10);
 		
-		BigDecimal valor = new BigDecimal(-10);
+		Executable execucaoDoDeposito = () -> contaBancaria.deposito(valorDeDepositoNegativo);
 		
-		Assertions.assertThrows(IllegalArgumentException.class, () -> contaBancaria.deposito(valor)); 
+		Assertions.assertThrows(IllegalArgumentException.class, execucaoDoDeposito); 
 	}
 	
 	@Test
 	void deveRealizarUmDeposito() {
-		BigDecimal saldo = new BigDecimal(10);
-		ContaBancaria contaBancaria = new ContaBancaria(saldo);
+		BigDecimal novoSaldo = new BigDecimal(10);
+		ContaBancaria contaBancaria = new ContaBancaria(novoSaldo);
+		BigDecimal valorDoDeposito = new BigDecimal(10);
+		BigDecimal saldoEsperado = new BigDecimal(20);
 		
-		BigDecimal valor = new BigDecimal(10);
-		BigDecimal novoSaldo = new BigDecimal(20);
+		contaBancaria.deposito(valorDoDeposito);
+		BigDecimal saldoAtualizado = contaBancaria.saldo();
 		
-		contaBancaria.deposito(valor);
-		
-		Assertions.assertEquals(novoSaldo, contaBancaria.saldo()); 
+		Assertions.assertEquals(saldoEsperado, saldoAtualizado); 
 	}
 
 }

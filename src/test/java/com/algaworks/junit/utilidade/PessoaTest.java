@@ -9,11 +9,16 @@ class PessoaTest {
 
 	@Test
 	void assercaoAgrupada() {
-		Pessoa pessoa = new Pessoa("Fabio", "Gauna");
+		String nome = "Fabio";
+		String sobrenome = "Gauna";
+		Pessoa pessoa = new Pessoa(nome, sobrenome);
+		
+		String nomeRetornado = pessoa.getNome();
+		String sobrenomeRetornado = pessoa.getSobrenome();
 		
 		assertAll("Asserções de Pessoas", 
-				()-> assertEquals("Fabio", pessoa.getNome()),
-				()-> assertEquals("Gauna", pessoa.getSobrenome()));
+				()-> assertEquals(nome, nomeRetornado),
+				()-> assertEquals(sobrenome, sobrenomeRetornado));
 	}
 
 }
