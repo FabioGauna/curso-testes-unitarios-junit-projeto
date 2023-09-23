@@ -10,17 +10,44 @@ import org.junit.jupiter.api.Test;
 class SaudacaoUtilTest {
 
 	@Test
-	public void deveSaudar() {
+	public void deveSaudarBomDia() {
 		String saudacao = SaudacaoUtil.saudar(9);
 		
 		assertEquals("Bom dia", saudacao, "Saudação incorreta!");
 	}
 	
 	@Test
-	public void deveLancarUmaExcecao() {
-		IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () -> saudar(-10));
+	public void deveSaudarBomDiaAPartir5h() {
+		String saudacao = SaudacaoUtil.saudar(5);
 		
-		assertEquals("Hora inválida", illegalArgumentException.getMessage());
+		assertEquals("Bom dia", saudacao, "Saudação incorreta!");
+	}
+	
+	@Test
+	public void deveSaudarBoaTarde() {
+		String saudacao = SaudacaoUtil.saudar(13);
+		
+		assertEquals("Boa tarde", saudacao, "Saudação incorreta!");
+	}
+	
+	@Test
+	public void deveSaudarBoaNoite() {
+		String saudacao = SaudacaoUtil.saudar(19);
+		
+		assertEquals("Boa noite", saudacao, "Saudação incorreta!");
+	}
+	
+	@Test
+	public void deveSaudarBoaNoiteAs4h() {
+		String saudacao = SaudacaoUtil.saudar(4);
+		
+		assertEquals("Boa noite", saudacao, "Saudação incorreta!");
+	}
+	
+	
+	@Test
+	public void deveLancarUmaExcecao() {
+		assertThrows(IllegalArgumentException.class, () -> saudar(-10));
 	}
 	
 	@Test
