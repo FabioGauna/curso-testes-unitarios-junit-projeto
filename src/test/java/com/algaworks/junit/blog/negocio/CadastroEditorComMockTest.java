@@ -1,6 +1,7 @@
 package com.algaworks.junit.blog.negocio;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
@@ -36,7 +37,7 @@ class CadastroEditorComMockTest {
 	void beforeEach() {
 		editor = new Editor(null, "Fabio", "fabio_gauna@hotmail.com", BigDecimal.TEN, true);
 		
-		when(armazenamentoEditor.salvar(editor))
+		when(armazenamentoEditor.salvar(any(Editor.class)))
 			.thenAnswer(invocation -> {
 				Editor editorPassado = invocation.getArgument(0, Editor.class);
 				editorPassado.setId(1L);
