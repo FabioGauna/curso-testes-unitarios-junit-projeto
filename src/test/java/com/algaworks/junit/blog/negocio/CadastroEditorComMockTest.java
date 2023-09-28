@@ -1,8 +1,10 @@
 package com.algaworks.junit.blog.negocio;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -61,6 +63,13 @@ class CadastroEditorComMockTest {
 		cadastroEditor.criar(editor);
 		
 		verify(armazenamentoEditor, times(1)).salvar(eq(editor));
+	}
+	
+	@Test
+	void Dado_um_editor_valido_Quando_criar_e_lancar_exception_Entao_nao_deve_enviar_email() {
+		when(armazenamentoEditor.salvar(editor)).thenThrow(new RuntimeException());
+		assertThrows(RuntimeException.class, () -> cadastroEditor.criar(editor));
+		verify(gerenciadorEnvioEmail, never()).enviarEmail(any());
 	}
 	
 }
