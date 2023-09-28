@@ -37,7 +37,11 @@ class CadastroEditorComMockTest {
 		editor = new Editor(null, "Fabio", "fabio_gauna@hotmail.com", BigDecimal.TEN, true);
 		
 		when(armazenamentoEditor.salvar(editor))
-			.thenReturn(new Editor(1L, "Fabio", "fabio_gauna@hotmail.com", BigDecimal.TEN, true));
+			.thenAnswer(invocation -> {
+				Editor editorPassado = invocation.getArgument(0, Editor.class);
+				editorPassado.setId(1L);
+				return editorPassado;
+			});
 	}
 	
 	@Test
