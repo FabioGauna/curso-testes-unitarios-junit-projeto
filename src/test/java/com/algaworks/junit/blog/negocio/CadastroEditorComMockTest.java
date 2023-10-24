@@ -10,11 +10,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
-import org.junit.jupiter.api.Test;
+import com.algaworks.junit.blog.exception.RegraNegocioException;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -91,6 +90,16 @@ class CadastroEditorComMockTest {
 		cadastroEditor.criar(editorSpy);
 
 		Mockito.verify(editorSpy, Mockito.atLeast(1)).getEmail();
+	}
+
+	@Test
+	void Dado_um_editor_com_email_existente_Quando_cadatrar_Entao_deve_lancar_exception(){
+		Mockito.when(armazenamentoEditor.encontrarPorEmail("fabio_gauna@hotmail.com"))
+				.thenReturn(Optional.empty())
+				.thenReturn(Optional.of(editor));
+		Editor editorComEmailExistente = new Editor(null, "Fabio", "fabio_gauna@hotmail.com", BigDecimal.TEN, true);
+		cadastroEditor.criar(editor);
+		assertThrows(RegraNegocioException.class, () -> cadastroEditor.criar(editorComEmailExistente));
 	}
 	
 }
