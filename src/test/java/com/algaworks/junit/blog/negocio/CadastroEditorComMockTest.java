@@ -4,10 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -100,6 +97,15 @@ class CadastroEditorComMockTest {
 		Editor editorComEmailExistente = new Editor(null, "Fabio", "fabio_gauna@hotmail.com", BigDecimal.TEN, true);
 		cadastroEditor.criar(editor);
 		assertThrows(RegraNegocioException.class, () -> cadastroEditor.criar(editorComEmailExistente));
+	}
+
+	@Test
+	void Dado_um_editor_valido_Quando_cadastrar_Entao_deve_enviar_email_apos_salvar(){
+		cadastroEditor.criar(editor);
+
+		InOrder inOrder = inOrder(armazenamentoEditor, gerenciadorEnvioEmail);
+		inOrder.verify(armazenamentoEditor, times(1)).salvar(editor);
+		inOrder.verify(gerenciadorEnvioEmail, times(1)).enviarEmail(any(Mensagem.class));
 	}
 	
 }
