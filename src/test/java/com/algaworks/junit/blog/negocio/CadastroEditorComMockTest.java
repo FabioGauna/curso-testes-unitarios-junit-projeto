@@ -83,5 +83,14 @@ class CadastroEditorComMockTest {
 
 		assertEquals(editorSalvo.getEmail(), editorSalvo.getEmail());
 	}
+
+	@Test
+	void Dado_um_editor_valido_Quando_cadastrar_Entao_deve_verificar_o_email(){
+		Editor editorSpy = Mockito.spy(editor);
+
+		cadastroEditor.criar(editorSpy);
+
+		Mockito.verify(editorSpy, Mockito.atLeast(1)).getEmail();
+	}
 	
 }
