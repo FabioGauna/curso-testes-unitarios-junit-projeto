@@ -9,6 +9,7 @@ import static org.mockito.Mockito.*;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+import com.algaworks.junit.blog.exception.EditorNaoEncontradoException;
 import com.algaworks.junit.blog.exception.RegraNegocioException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,8 +22,6 @@ import com.algaworks.junit.blog.modelo.Editor;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @ExtendWith(MockitoExtension.class)
 class CadastroEditorComMockTest {
-
-	Editor editor;
 
 	@Captor
 	ArgumentCaptor<Mensagem> mensagemArgumentCaptor;
@@ -38,9 +37,12 @@ class CadastroEditorComMockTest {
 	
 	@Nested
 	class CadastroComEditorValido {
+
+		@Spy
+		Editor editor = new Editor(null, "Fabio", "fabio_gauna@hotmail.com", BigDecimal.TEN, true);
+
 		@BeforeEach
 		void beforeEach() {
-			editor = new Editor(null, "Fabio", "fabio_gauna@hotmail.com", BigDecimal.TEN, true);
 
 			when(armazenamentoEditor.salvar(any(Editor.class)))
 					.thenAnswer(invocation -> {
@@ -119,4 +121,74 @@ class CadastroEditorComMockTest {
 		}
 	}
 
+	@Nested
+	class EdicaoComEditorValido{
+
+		@Spy
+		Editor editor = new Editor(1L, "Fabio", "fabio_gauna@hotmail.com", BigDecimal.TEN, true);
+
+		@BeforeEach
+		void beforeEach() {
+			when(armazenamentoEditor.salvar(editor)).thenAnswer(invocation -> invocation.getArgument(0, Editor.class));
+			when(armazenamentoEditor.encontrarPorId(1L)).thenReturn(Optional.of(editor));
+		}
+
+		@Test
+		void Dado_um_editor_valido_Quando_editar_Entao_deve_alterar_um_editor_salvo(){
+			Editor editorAtualizado = new Editor(1L, "Fabio Araujo Gauna", "fabio_gauna@hotmail.com", BigDecimal.ZERO, false);
+			cadastroEditor.editar(editorAtualizado);
+
+			verify(editor, times(1)).atualizarComDados(editorAtualizado);
+
+			InOrder inOrder = inOrder(editor, armazenamentoEditor);
+			inOrder.verify(editor).atualizarComDados(editorAtualizado);
+			inOrder.verify(armazenamentoEditor).salvar(editor);
+
+		}
+	}
+
+	@Nested
+	class EdicaoComEditorInexistente{
+
+		Editor editor = new Editor(99L, "Fabio", "fabio_gauna@hotmail.com", BigDecimal.TEN, true);
+
+		@BeforeEach
+		void beforeEach() {
+			when(armazenamentoEditor.encontrarPorId(99L)).thenReturn(Optional.empty());
+		}
+
+		@Test
+		void Dado_um_editor_que_nao_exista_Quando_editar_Entao_deve_lancar_exception(){
+			assertThrows(EditorNaoEncontradoException.class, () -> cadastroEditor.editar(editor));
+			verify(armazenamentoEditor, never()).salvar(any(Editor.class));
+		}
+	}
+
+	@Nested
+	class EdicaoComEditorComEmailCadastradoParaOutroID{
+
+		Editor editorEncontrado = new Editor(99L, "Fabio", "fabio_gauna@hotmail.com", BigDecimal.TEN, true);
+
+		@BeforeEach
+		void beforeEach() {
+			when(armazenamentoEditor.encontrarPorEmailComIdDiferenteDe("fabio_gauna@hotmail.com",1L)).thenReturn(Optional.of(editorEncontrado));
+		}
+
+		@Test
+		void Dado_um_editor_valido_com_email_cadastrado_em_outro_id_Quando_editar_Entao_deve_lancar_exception(){
+			Editor editorAtualizado = new Editor(1L, "Fabio Araujo Gauna", "fabio_gauna@hotmail.com", BigDecimal.ZERO, false);
+
+			assertThrows(RegraNegocioException.class, () -> cadastroEditor.editar(editorAtualizado));
+		}
+	}
+
+	@Nested
+	class EdicaoComEditorNulo{
+
+		@Test
+		void Dado_um_editor_null_Quando_editar_Entao_deve_lancar_exception(){
+			Assertions.assertThrows(NullPointerException.class, () -> cadastroEditor.editar(null));
+		}
+
+	}
 }
