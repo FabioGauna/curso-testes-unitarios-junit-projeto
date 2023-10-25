@@ -39,7 +39,7 @@ class CadastroEditorComMockTest {
 	class CadastroComEditorValido {
 
 		@Spy
-		Editor editor = new Editor(null, "Fabio", "fabio_gauna@hotmail.com", BigDecimal.TEN, true);
+		Editor editor = EditorTestData.umEditorNovo();
 
 		@BeforeEach
 		void beforeEach() {
@@ -55,14 +55,12 @@ class CadastroEditorComMockTest {
 		@Test
 		void Dado_um_editor_valido_Quando_criar_Entao_deve_retornar_um_id_de_cadastro() {
 			Editor editorSalvo = cadastroEditor.criar(editor);
-
 			assertEquals(1L, editorSalvo.getId());
 		}
 
 		@Test
 		void Dado_um_editor_valido_Quando_criar_Entao_deve_chamar_metodo_salvar_do_armazenamento() {
 			cadastroEditor.criar(editor);
-
 			verify(armazenamentoEditor, times(1)).salvar(eq(editor));
 		}
 
@@ -76,20 +74,15 @@ class CadastroEditorComMockTest {
 		@Test
 		void Dado_um_editor_valido_Quando_cadastrar_Entao_deve_enviar_email_com_destino_ao_editor(){
 			Editor editorSalvo = cadastroEditor.criar(editor);
-
 			Mockito.verify(gerenciadorEnvioEmail).enviarEmail(mensagemArgumentCaptor.capture());
-
 			Mensagem mensagem = mensagemArgumentCaptor.getValue();
-
 			assertEquals(editorSalvo.getEmail(), editorSalvo.getEmail());
 		}
 
 		@Test
 		void Dado_um_editor_valido_Quando_cadastrar_Entao_deve_verificar_o_email(){
 			Editor editorSpy = Mockito.spy(editor);
-
 			cadastroEditor.criar(editorSpy);
-
 			Mockito.verify(editorSpy, Mockito.atLeast(1)).getEmail();
 		}
 
@@ -98,7 +91,7 @@ class CadastroEditorComMockTest {
 			Mockito.when(armazenamentoEditor.encontrarPorEmail("fabio_gauna@hotmail.com"))
 					.thenReturn(Optional.empty())
 					.thenReturn(Optional.of(editor));
-			Editor editorComEmailExistente = new Editor(null, "Fabio", "fabio_gauna@hotmail.com", BigDecimal.TEN, true);
+			Editor editorComEmailExistente = EditorTestData.umEditorNovo();
 			cadastroEditor.criar(editor);
 			assertThrows(RegraNegocioException.class, () -> cadastroEditor.criar(editorComEmailExistente));
 		}
@@ -106,7 +99,6 @@ class CadastroEditorComMockTest {
 		@Test
 		void Dado_um_editor_valido_Quando_cadastrar_Entao_deve_enviar_email_apos_salvar(){
 			cadastroEditor.criar(editor);
-
 			InOrder inOrder = inOrder(armazenamentoEditor, gerenciadorEnvioEmail);
 			inOrder.verify(armazenamentoEditor, times(1)).salvar(editor);
 			inOrder.verify(gerenciadorEnvioEmail, times(1)).enviarEmail(any(Mensagem.class));
@@ -125,7 +117,7 @@ class CadastroEditorComMockTest {
 	class EdicaoComEditorValido{
 
 		@Spy
-		Editor editor = new Editor(1L, "Fabio", "fabio_gauna@hotmail.com", BigDecimal.TEN, true);
+		Editor editor = EditorTestData.umEditorEncontrado();
 
 		@BeforeEach
 		void beforeEach() {
@@ -135,11 +127,9 @@ class CadastroEditorComMockTest {
 
 		@Test
 		void Dado_um_editor_valido_Quando_editar_Entao_deve_alterar_um_editor_salvo(){
-			Editor editorAtualizado = new Editor(1L, "Fabio Araujo Gauna", "fabio_gauna@hotmail.com", BigDecimal.ZERO, false);
+			Editor editorAtualizado = EditorTestData.umEditorEncontrado();
 			cadastroEditor.editar(editorAtualizado);
-
 			verify(editor, times(1)).atualizarComDados(editorAtualizado);
-
 			InOrder inOrder = inOrder(editor, armazenamentoEditor);
 			inOrder.verify(editor).atualizarComDados(editorAtualizado);
 			inOrder.verify(armazenamentoEditor).salvar(editor);
@@ -149,16 +139,10 @@ class CadastroEditorComMockTest {
 
 	@Nested
 	class EdicaoComEditorInexistente{
-
-		Editor editor = new Editor(99L, "Fabio", "fabio_gauna@hotmail.com", BigDecimal.TEN, true);
-
-		@BeforeEach
-		void beforeEach() {
-			when(armazenamentoEditor.encontrarPorId(99L)).thenReturn(Optional.empty());
-		}
-
 		@Test
 		void Dado_um_editor_que_nao_exista_Quando_editar_Entao_deve_lancar_exception(){
+			Editor editor = EditorTestData.umEditorComIdInexistente();
+			when(armazenamentoEditor.encontrarPorId(99L)).thenReturn(Optional.empty());
 			assertThrows(EditorNaoEncontradoException.class, () -> cadastroEditor.editar(editor));
 			verify(armazenamentoEditor, never()).salvar(any(Editor.class));
 		}
@@ -166,8 +150,7 @@ class CadastroEditorComMockTest {
 
 	@Nested
 	class EdicaoComEditorComEmailCadastradoParaOutroID{
-
-		Editor editorEncontrado = new Editor(99L, "Fabio", "fabio_gauna@hotmail.com", BigDecimal.TEN, true);
+		Editor editorEncontrado = EditorTestData.umEditorComIdInexistente();
 
 		@BeforeEach
 		void beforeEach() {
@@ -176,8 +159,7 @@ class CadastroEditorComMockTest {
 
 		@Test
 		void Dado_um_editor_valido_com_email_cadastrado_em_outro_id_Quando_editar_Entao_deve_lancar_exception(){
-			Editor editorAtualizado = new Editor(1L, "Fabio Araujo Gauna", "fabio_gauna@hotmail.com", BigDecimal.ZERO, false);
-
+			Editor editorAtualizado = EditorTestData.umEditorEncontrado();
 			assertThrows(RegraNegocioException.class, () -> cadastroEditor.editar(editorAtualizado));
 		}
 	}
