@@ -39,14 +39,15 @@ public class CadastroPostTest {
     ArgumentCaptor<Notificacao> notificacaoArgumentCaptor;
 
     @Spy
-    Editor editor = new Editor(1L, "Fabio", "fabio_gauna@hotmail.com", BigDecimal.TEN, true);
+    Editor editor = EditorTestData.umEditorEncontrado().build();
 
     @Nested
     @DisplayName("Cadastro de Post válido")
     class CadastroDePostValido {
 
         @Spy
-        Post post = new Post("titulo", "conteudo", editor, true, true);
+
+        Post post = PostTestData.umNovoPost().build();
 
         @BeforeEach
         void init() {
@@ -142,11 +143,8 @@ public class CadastroPostTest {
     @DisplayName("Edição de Post válido e pago")
     class EdicaoDePostValidoEPago {
 
-        Ganhos ganhos = new Ganhos(new BigDecimal("1"), 1, new BigDecimal("10"));
-
         @Spy
-        Post post = new Post(1L, "titulo", "conteudo", editor, "ola-mundo-java",
-            ganhos, true, true);
+        Post post = PostTestData.umPostExistente().build();
 
         @BeforeEach
         void init() {
@@ -170,6 +168,7 @@ public class CadastroPostTest {
 
         @Test
         void Dado_um_post_pago__Quando_editar__Entao_deve_retornar_post_com_os_mesmos_ganhos_sem_recalcular() {
+            post.setPago(true);
             when(armazenamentoPost.encontrarPorId(1L)).thenReturn(Optional.of(post));
             Post postEditado = cadastroPost.editar(post);
             verify(postEditado, times(1)).isPago();
@@ -183,11 +182,8 @@ public class CadastroPostTest {
     @DisplayName("Edição de Post válido e não pago")
     class EdicaoDePostValidoENaoPago {
 
-        Ganhos ganhos = new Ganhos(new BigDecimal("1"), 1, new BigDecimal("10"));
-
         @Spy
-        Post post = new Post(1L, "titulo", "conteudo", editor, "ola-mundo-java",
-                ganhos, false, false);
+        Post post = PostTestData.umPostExistente().build();
 
         @BeforeEach
         void init() {
@@ -222,11 +218,8 @@ public class CadastroPostTest {
     @DisplayName("Remoção de Post com id válido")
     class RemocaoDePostComIdValido {
 
-        Ganhos ganhos = new Ganhos(new BigDecimal("1"), 1, new BigDecimal("10"));
-
         @Spy
-        Post post = new Post(1L, "titulo", "conteudo", editor, "ola-mundo-java",
-                ganhos, false, false);
+        Post post = PostTestData.umPostExistente().build();
 
         @Test
         void Dado_um_post_valido__Quando_remover_Entao_deve_excluir() {
