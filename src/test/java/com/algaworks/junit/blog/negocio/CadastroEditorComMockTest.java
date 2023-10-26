@@ -39,7 +39,7 @@ class CadastroEditorComMockTest {
 	class CadastroComEditorValido {
 
 		@Spy
-		Editor editor = EditorTestData.umEditorNovo();
+		Editor editor = EditorTestData.umEditorNovo().build();
 
 		@BeforeEach
 		void beforeEach() {
@@ -91,7 +91,7 @@ class CadastroEditorComMockTest {
 			Mockito.when(armazenamentoEditor.encontrarPorEmail("fabio_gauna@hotmail.com"))
 					.thenReturn(Optional.empty())
 					.thenReturn(Optional.of(editor));
-			Editor editorComEmailExistente = EditorTestData.umEditorNovo();
+			Editor editorComEmailExistente = EditorTestData.umEditorNovo().build();
 			cadastroEditor.criar(editor);
 			assertThrows(RegraNegocioException.class, () -> cadastroEditor.criar(editorComEmailExistente));
 		}
@@ -117,7 +117,7 @@ class CadastroEditorComMockTest {
 	class EdicaoComEditorValido{
 
 		@Spy
-		Editor editor = EditorTestData.umEditorEncontrado();
+		Editor editor = EditorTestData.umEditorEncontrado().build();
 
 		@BeforeEach
 		void beforeEach() {
@@ -127,7 +127,7 @@ class CadastroEditorComMockTest {
 
 		@Test
 		void Dado_um_editor_valido_Quando_editar_Entao_deve_alterar_um_editor_salvo(){
-			Editor editorAtualizado = EditorTestData.umEditorEncontrado();
+			Editor editorAtualizado = EditorTestData.umEditorEncontrado().build();
 			cadastroEditor.editar(editorAtualizado);
 			verify(editor, times(1)).atualizarComDados(editorAtualizado);
 			InOrder inOrder = inOrder(editor, armazenamentoEditor);
@@ -141,7 +141,7 @@ class CadastroEditorComMockTest {
 	class EdicaoComEditorInexistente{
 		@Test
 		void Dado_um_editor_que_nao_exista_Quando_editar_Entao_deve_lancar_exception(){
-			Editor editor = EditorTestData.umEditorComIdInexistente();
+			Editor editor = EditorTestData.umEditorComIdInexistente().build();
 			when(armazenamentoEditor.encontrarPorId(99L)).thenReturn(Optional.empty());
 			assertThrows(EditorNaoEncontradoException.class, () -> cadastroEditor.editar(editor));
 			verify(armazenamentoEditor, never()).salvar(any(Editor.class));
@@ -150,7 +150,7 @@ class CadastroEditorComMockTest {
 
 	@Nested
 	class EdicaoComEditorComEmailCadastradoParaOutroID{
-		Editor editorEncontrado = EditorTestData.umEditorComIdInexistente();
+		Editor editorEncontrado = EditorTestData.umEditorComIdInexistente().build();
 
 		@BeforeEach
 		void beforeEach() {
@@ -159,7 +159,7 @@ class CadastroEditorComMockTest {
 
 		@Test
 		void Dado_um_editor_valido_com_email_cadastrado_em_outro_id_Quando_editar_Entao_deve_lancar_exception(){
-			Editor editorAtualizado = EditorTestData.umEditorEncontrado();
+			Editor editorAtualizado = EditorTestData.umEditorEncontrado().build();
 			assertThrows(RegraNegocioException.class, () -> cadastroEditor.editar(editorAtualizado));
 		}
 	}

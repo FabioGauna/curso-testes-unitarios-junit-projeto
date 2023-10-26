@@ -10,15 +10,19 @@ public class EditorTestData {
 
     }
 
-    public static Editor umEditorNovo(){
-        return new Editor(null, "Fabio", "fabio_gauna@hotmail.com", BigDecimal.TEN, true);
+    public static Editor.Builder umEditorNovo(){
+        return Editor.builder()
+                .comNome("Fabio Araujo Gauna")
+                .comEmail("fabio_gauna@hotmail.com")
+                .comValorPagoPorPalavra(BigDecimal.TEN)
+                .comPremium(true);
     }
 
-    public static Editor umEditorEncontrado(){
-        return new Editor(1L, "Fabio Araujo Gauna", "fabio_gauna@hotmail.com", BigDecimal.ZERO, false);
+    public static Editor.Builder umEditorEncontrado(){
+        return umEditorNovo().comId(1L);
     }
 
-    public static Editor umEditorComIdInexistente() {
-        return new Editor(99L, "Fabio", "fabio_gauna@hotmail.com", BigDecimal.TEN, true);
+    public static Editor.Builder umEditorComIdInexistente() {
+        return umEditorNovo().comId(99L);
     }
 }
