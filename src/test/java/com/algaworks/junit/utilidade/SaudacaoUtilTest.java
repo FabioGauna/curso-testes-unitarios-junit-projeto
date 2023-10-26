@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class SaudacaoUtilTest {
 
@@ -76,6 +78,13 @@ class SaudacaoUtilTest {
 		
 		
 		assertDoesNotThrow(execucaoValida);
+	}
+
+	@ParameterizedTest
+	@ValueSource(ints = {5,6,7,8,9,10,11})
+	public void Dado_um_horario_matinal__Quando_saudar__Entao_deve_retorar_bom_dia(int hora){
+		String saudacao = SaudacaoUtil.saudar(hora);
+		assertEquals("Bom dia", saudacao, "Saudação incorreta!");
 	}
 
 }
